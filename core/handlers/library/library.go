@@ -33,3 +33,7 @@ func (r *HandlerLibrary) DefaultAuth() auth.Filter {
 func (r *HandlerLibrary) DefaultDecorator() decoration.Decorator {
 	return decorator.NewDecorator()
 }
+
+func (r *HandlerLibrary) FileBasedDecorator() decoration.Decorator {
+	return decorator.NewFDecorator()
+}
