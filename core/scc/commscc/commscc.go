@@ -73,12 +73,14 @@ func (scc *CommSCC) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 }
 
 func (scc *CommSCC) send(stub shim.ChaincodeStubInterface) pb.Response {
-	// Send a payload args[1] to a given endpoint args[2]
+	// Send a payload args[1] with sessionID args[2] to a given endpoint args[3]
 	args := stub.GetArgs()
 	// Payload
 	payload := args[1]
+	// SessionID
+	sessionID := args[2]
 	// Unmarshal the endpoint
-	endpoint := string(args[2])
+	endpoint := string(args[4])
 
 	// TODO: replace this with one with SendByCriteria to receive an ack
 	service.GetGossipService().Send(
@@ -87,7 +89,10 @@ func (scc *CommSCC) send(stub shim.ChaincodeStubInterface) pb.Response {
 			// TODO: Which tag works better here?
 			//Tag:     gossip.GossipMessage_CHAN_AND_ORG,
 			Content: &gossip.GossipMessage_MpcData{
-				MpcData: &gossip.MPCDataMessage{Payload: &gossip.MPCPayload{Data: payload}},
+				MpcData: &gossip.MPCDataMessage{Payload: &gossip.MPCPayload{
+					SessionID: sessionID,
+					Data:      payload,
+				}},
 			},
 		},
 		&comm.RemotePeer{Endpoint: endpoint},
