@@ -131,6 +131,11 @@ func (m *GossipMessage) IsDataMsg() bool {
 	return m.GetDataMsg() != nil
 }
 
+// IsMpcData returns whether this GossipMessage is a mpc data message
+func (m *GossipMessage) IsMpcData() bool {
+	return m.GetMpcData() != nil
+}
+
 // IsStateInfoPullRequestMsg returns whether this GossipMessage is a stateInfoPullRequest
 func (m *GossipMessage) IsStateInfoPullRequestMsg() bool {
 	return m.GetStateInfoPullReq() != nil

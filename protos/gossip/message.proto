@@ -129,6 +129,8 @@ message GossipMessage {
         // Encapsulates private data used to distribute
         // private rwset after the endorsement
         PrivateDataMessage private_data = 25;
+
+        MPCDataMessage mpc_data = 26;
     }
 }
 
@@ -232,6 +234,10 @@ message DataMessage {
     Payload payload = 1;
 }
 
+message MPCDataMessage {
+    MPCPayload payload = 1;
+}
+
 // PrivateDataMessage message which includes private
 // data information to distributed once transaction
 // has been endorsed
@@ -244,6 +250,11 @@ message Payload {
     uint64 seq_num              = 1;
     bytes data                  = 2;
     repeated bytes private_data = 3;
+}
+
+message MPCPayload {
+    bytes sessionID             = 1;
+    bytes data                  = 2;
 }
 
 // PrivatePayload payload to encapsulate private

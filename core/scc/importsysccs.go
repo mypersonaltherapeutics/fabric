@@ -20,6 +20,7 @@ import (
 	"github.com/hyperledger/fabric/core/aclmgmt"
 
 	//import system chain codes here
+	"github.com/hyperledger/fabric/core/scc/commscc"
 	"github.com/hyperledger/fabric/core/scc/cscc"
 	"github.com/hyperledger/fabric/core/scc/escc"
 	"github.com/hyperledger/fabric/core/scc/lscc"
@@ -78,6 +79,15 @@ var systemChaincodes = []*SystemChaincode{
 		Chaincode:         rscc.NewRscc(),
 		InvokableExternal: true,  // rscc can be invoked to update policies
 		InvokableCC2CC:    false, // rscc cannot be invoked from a cc
+	},
+	{
+		Enabled:           true,
+		Name:              "commscc",
+		Path:              "github.com/hyperledger/fabric/core/scc/commscc",
+		InitArgs:          [][]byte{[]byte("")},
+		Chaincode:         &commscc.CommSCC{},
+		InvokableExternal: false, // commscc cannot be invoked externally
+		InvokableCC2CC:    true,  // commscc can be invoked from a cc
 	},
 }
 
