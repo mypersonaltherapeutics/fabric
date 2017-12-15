@@ -323,7 +323,7 @@ func TestDeployResource(t *testing.T) {
 		bc := common2.GetMockBroadcastClient(nil)
 
 		return &ChaincodeCmdFactory{
-			EndorserClient:  ec,
+			EndorserClients: []peer.EndorserClient{ec},
 			Signer:          snr,
 			BroadcastClient: bc,
 		}, &configUpdateBroadcastEvent{bc}
@@ -374,7 +374,7 @@ func TestDeployResource(t *testing.T) {
 	snr := (&mockSigningIdentity{}).thatSerializes([]byte{1, 2, 3}, 3).thatSigns([]byte{1, 2, 3}, 3)
 	ec.On("ProcessProposal").Return(nil, errors.New("endorsement failed"))
 	err = chaincodeDeploy(&ChaincodeCmdFactory{
-		EndorserClient:  ec,
+		EndorserClients: []peer.EndorserClient{ec},
 		Signer:          snr,
 		BroadcastClient: common2.GetMockBroadcastClient(nil),
 	}, noopInit)

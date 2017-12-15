@@ -57,6 +57,7 @@ var (
 	chaincodeUsr             string // Not used
 	chaincodeQueryRaw        bool
 	chaincodeQueryHex        bool
+	chaincodeEndorsers       string
 	customIDGenAlg           string
 	channelID                string
 	chaincodeVersion         string
@@ -118,6 +119,8 @@ func resetFlags() {
 		"Get the installed chaincodes on a peer")
 	flags.BoolVarP(&getInstantiatedChaincodes, "instantiated", "", false,
 		"Get the instantiated chaincodes on a channel")
+	flags.StringVarP(&chaincodeEndorsers, "endorsers", "R", "",
+		"List of endorsers")
 }
 
 func attachFlags(cmd *cobra.Command, names []string) {

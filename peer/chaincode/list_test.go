@@ -47,7 +47,7 @@ func TestChaincodeListCmd(t *testing.T) {
 	mockBroadcastClient := common.GetMockBroadcastClient(nil)
 
 	mockCF := &ChaincodeCmdFactory{
-		EndorserClient:  mockEndorerClient,
+		EndorserClients: []pb.EndorserClient{mockEndorerClient},
 		Signer:          signer,
 		BroadcastClient: mockBroadcastClient,
 	}
