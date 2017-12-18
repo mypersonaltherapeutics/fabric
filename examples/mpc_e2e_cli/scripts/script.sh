@@ -75,6 +75,7 @@ checkOSNAvailability() {
 			 peer channel fetch 0 0_block.pb -o orderer.example.com:7050 -c "testchainid" --tls --cafile $ORDERER_CA >&log.txt
 		 fi
 		 test $? -eq 0 && VALUE=$(cat log.txt | awk '/Received block/ {print $NF}')
+		 echo $VALUE
 		 test "$VALUE" = "0" && let rc=0
 	done
 	cat log.txt
@@ -203,9 +204,9 @@ chaincodeInvoke () {
 	# while 'peer chaincode' command can get the orderer endpoint from the peer (if join was successful),
 	# lets supply it directly as we know it using the "-o" option
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
-		peer chaincode invoke -o orderer.example.com:7050 -C $CHANNEL_NAME -n mycc -c '{"Args":["invoke","a","b","10"]}' >&log.txt
+		peer chaincode invoke -R 'peer0.org1.example.com:7051,peer1.org1.example.com:7051' -o orderer.example.com:7050 -C $CHANNEL_NAME -n mycc -c '{"Args":["invoke","a","b","10"]}' >&log.txt
 	else
-		peer chaincode invoke -o orderer.example.com:7050  --tls --cafile $ORDERER_CA -C $CHANNEL_NAME -n mycc -c '{"Args":["invoke","a","b","10"]}' >&log.txt
+		peer chaincode invoke -R 'peer0.org1.example.com:7051,peer1.org1.example.com:7051' -o orderer.example.com:7050  --tls --cafile $ORDERER_CA -C $CHANNEL_NAME -n mycc -c '{"Args":["invoke","a","b","10"]}' >&log.txt
 	fi
 	res=$?
 	cat log.txt
@@ -236,11 +237,11 @@ updateAnchorPeers 2
 echo "Installing chaincode on org1/peer0..."
 installChaincode 0
 echo "Install chaincode on org2/peer2..."
-installChaincode 2
+installChaincode 1
 
 #Instantiate chaincode on Peer2/Org2
 echo "Instantiating chaincode on org2/peer2..."
-instantiateChaincode 2
+instantiateChaincode 0
 
 #Query on chaincode on Peer0/Org1
 echo "Querying chaincode on org1/peer0..."
@@ -249,14 +250,6 @@ chaincodeQuery 0 100
 #Invoke on chaincode on Peer0/Org1
 echo "Sending invoke transaction on org1/peer0..."
 chaincodeInvoke 0
-
-## Install chaincode on Peer3/Org2
-echo "Installing chaincode on org2/peer3..."
-installChaincode 3
-
-#Query on chaincode on Peer3/Org2, check if the result is 90
-echo "Querying chaincode on org2/peer3..."
-chaincodeQuery 3 90
 
 echo
 echo "===================== All GOOD, End-2-End execution completed ===================== "

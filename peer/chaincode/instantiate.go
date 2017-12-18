@@ -72,6 +72,7 @@ func instantiateCmd(cf *ChaincodeCmdFactory) *cobra.Command {
 
 //instantiate the command via Endorser
 func instantiate(cmd *cobra.Command, cf *ChaincodeCmdFactory) (*common.Envelope, error) {
+	logger.Info("instantiate the command via Endorser...")
 	spec, err := getChaincodeSpec(cmd)
 	if err != nil {
 		return nil, err
@@ -98,10 +99,12 @@ func instantiate(cmd *cobra.Command, cf *ChaincodeCmdFactory) (*common.Envelope,
 		return nil, fmt.Errorf("Error creating signed proposal  %s: %s", chainFuncName, err)
 	}
 
+	logger.Info("Send instantiation proposal")
 	proposalResponse, err := cf.EndorserClients[0].ProcessProposal(context.Background(), signedProp)
 	if err != nil {
 		return nil, fmt.Errorf("Error endorsing %s: %s", chainFuncName, err)
 	}
+	logger.Info("Send instantiation proposal. Response returned")
 
 	if proposalResponse != nil {
 		// assemble a signed transaction (it's an Envelope message)
@@ -120,6 +123,7 @@ func instantiate(cmd *cobra.Command, cf *ChaincodeCmdFactory) (*common.Envelope,
 // (hash) is printed to STDOUT for use by subsequent chaincode-related CLI
 // commands.
 func chaincodeDeploy(cf *ChaincodeCmdFactory, sendInit sendInitTransaction) error {
+	logger.Info("chaincodeDeploy instantiates the chaincode.")
 	if channelID == "" {
 		return errors.New("The required parameter 'channelID' is empty. Rerun the command with -C flag")
 	}

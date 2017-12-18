@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"sync"
+	"github.com/spf13/viper"
 )
 
 // checkSpec to see if chaincode resides within current package capture for language.
@@ -235,6 +236,7 @@ func InitCmdFactory(isEndorserRequired, isOrdererRequired bool) (*ChaincodeCmdFa
 	if isEndorserRequired {
 		// Check if multiple endorsers are required...
 		if len(chaincodeEndorsers) != 0 {
+			logger.Infof("Multiple endorsers set: [%v]", chaincodeEndorsers)
 			endorsers := strings.Split(chaincodeEndorsers, ",")
 
 			for _, endorser := range endorsers {
@@ -245,6 +247,7 @@ func InitCmdFactory(isEndorserRequired, isOrdererRequired bool) (*ChaincodeCmdFa
 				endorserClients = append(endorserClients, endorserClient)
 			}
 		} else {
+			logger.Infof("Single endorsers set: [%v]", viper.GetString("peer.address"))
 			endorserClient, err := common.GetEndorserClientFnc()
 			if err != nil {
 				return nil, fmt.Errorf("Error getting endorser client %s: %s", chainFuncName, err)

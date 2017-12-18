@@ -2,16 +2,17 @@ package mpc
 
 import (
 	"fmt"
-
-	"github.com/hyperledger/fabric/build/docker/gotools/obj/gopath/src/github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/core/scc/commscc"
-	"github.com/hyperledger/fabric/protos/gossip"
 	"errors"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/hyperledger/fabric/protos/gossip"
 )
 
 const (
 	COMM_SCC = "commscc"
+	SEND    = "send"
+	RECEIVE = "receive"
 )
 
 type commSCCChannel struct {
@@ -29,7 +30,7 @@ func NewCommSCCChannel(stub shim.ChaincodeStubInterface) Channel {
 func (c *commSCCChannel) Send(payload []byte, endpoint string) error {
 	r := c.stub.InvokeChaincode(
 		COMM_SCC,
-		[][]byte{[]byte(commscc.SEND), c.sessionID, payload, []byte(endpoint)},
+		[][]byte{[]byte(SEND), c.sessionID, payload, []byte(endpoint)},
 		"",
 	)
 
@@ -43,7 +44,7 @@ func (c *commSCCChannel) Send(payload []byte, endpoint string) error {
 func (c *commSCCChannel) Receive(timeout int) ([]byte, error) {
 	r := c.stub.InvokeChaincode(
 		COMM_SCC,
-		[][]byte{[]byte(commscc.RECEIVE), c.sessionID},
+		[][]byte{[]byte(RECEIVE), c.sessionID},
 		"",
 	)
 

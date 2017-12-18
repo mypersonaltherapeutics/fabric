@@ -20,8 +20,8 @@ import (
 	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/mpc"
 	pb "github.com/hyperledger/fabric/protos/peer"
+	"strconv"
 )
 
 type MPCExampleChaincode struct {
@@ -35,51 +35,68 @@ func (t *MPCExampleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response
 
 func (t *MPCExampleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("Invoke")
-	// Run function arg[0] as master/slave arg[1]
+	// Run function arg[0] as master/slave decorations["master"]
 	// connecting to decorations["target"] on input
 	// decorations["input"]
-
-	args := stub.GetArgs()
 	decorations := stub.GetDecorations()
 
 	//function := string(args[0])
-	master := true
-	if args[1][0] == 0 {
-		master = false
-	}
+	masterStr := string(decorations["target"])
+	//master := true
+	//if masterStr == "false" {
+	//	master = false
+	//}
 	target := string(decorations["target"])
 	input := decorations["input"]
 
-	// Open channel
-	channel := mpc.NewCommSCCChannel(stub)
-	if master {
-		// First send, then receive
-		err := channel.Send(input, target)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
+	fmt.Printf("Decorations: [%s][%s][%s]\n", masterStr, target, string(input))
 
-		res, err := channel.Receive(10)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		fmt.Printf("got [%v] from [%s]", res, target)
-	} else {
-		// First receive, then send
-		res, err := channel.Receive(10)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		fmt.Printf("got [%v] from [%s]", res, target)
 
-		err = channel.Send(input, target)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
+	fmt.Println("ex02 Invoke")
+	function, args := stub.GetFunctionAndParameters()
+	if function == "query" {
+		// the old "Query" is now implemtned in invoke
+		return t.query(stub, args)
 	}
+
+	//// Open channel
+	//channel := NewCommSCCChannel(stub)
+	//if master {
+	//	// First send, then receive
+	//	err := channel.Send(input, target)
+	//	if err != nil {
+	//		return shim.Error(err.Error())
+	//	}
+	//
+	//	res, err := channel.Receive(10)
+	//	if err != nil {
+	//		return shim.Error(err.Error())
+	//	}
+	//	fmt.Printf("got [%v] from [%s]", res, target)
+	//} else {
+	//	// First receive, then send
+	//	res, err := channel.Receive(10)
+	//	if err != nil {
+	//		return shim.Error(err.Error())
+	//	}
+	//	fmt.Printf("got [%v] from [%s]", res, target)
+	//
+	//	err = channel.Send(input, target)
+	//	if err != nil {
+	//		return shim.Error(err.Error())
+	//	}
+	//}
 
 	return shim.Success(nil)
 }
+
+// query callback representing the query of a chaincode
+func (t *MPCExampleChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	jsonResp := "{\"Name\":\"" + "A" + "\",\"Amount\":\"" + "100" + "\"}"
+	fmt.Printf("Query Response:%s\n", jsonResp)
+	return shim.Success([]byte(strconv.Itoa(100)))
+}
+
 
 func main() {
 	err := shim.Start(new(MPCExampleChaincode))

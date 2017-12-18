@@ -1,2 +1,3 @@
-target: aaa
+master: true
+target: peer0.org2.example.com
 input: 12
